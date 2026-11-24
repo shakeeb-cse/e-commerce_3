@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopZone | Online Shopping for Electronics, Fashion, Home & More</title>
+  <!-- Tailwind CSS via CDN for clean, responsive utility classes -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    html { scroll-behavior: smooth; font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#EAEDED] text-[#0F1111] antialiased">
+
+  <!-- Toast Notification Box (Replaces browser alert() for clean UX) -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2 rounded-lg bg-[#131921] px-4 py-3 text-sm font-medium text-white shadow-xl border border-amber-400/40 transition-all">
+    <span class="text-emerald-400 font-bold">✓</span>
+    <span id="toast-msg">Added to Cart!</span>
+  </div>
+
+  <!-- 1. TOP NAVIGATION BAR (Amazon Dark Navy #131921) -->
+  <header id="top" class="sticky top-0 z-40 bg-[#131921] text-white shadow-md">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2.5">
+      
+      <!-- Brand Logo -->
+      <a href="#top" class="flex items-center gap-1 rounded px-2 py-1 hover:outline hover:outline-1 hover:outline-white">
+        <span class="text-2xl font-extrabold tracking-tight text-white">Shop<span class="text-[#FF9900]">Zone</span></span>
+        <span class="text-xs text-gray-300 mt-1">.in</span>
+      </a>
+
+      <!-- Search Bar with Category Filter & Search Button -->
+      <form onsubmit="handleSearch(event)" class="order-3 flex w-full flex-1 overflow-hidden rounded-md bg-white focus-within:ring-2 focus-within:ring-[#FF9900] md:order-2 md:mx-4 md:max-w-2xl">
+        <select aria-label="Search Category" class="bg-gray-100 px-2.5 py-2 text-xs font-medium text-gray-700 border-r border-gray-300 focus:outline-none">
+          <option>All</option>
+          <option>Electronics</option>
+          <option>Fashion</option>
+          <option>Home & Kitchen</option>
+          <option>Books</option>
+        </select>
+        <input id="search-input" type="text" placeholder="Search ShopZone.in for gadgets, clothes, books..." class="w-full px-3 py-2 text-sm text-gray-900 focus:outline-none" />
+        <button type="submit" aria-label="Search" class="bg-[#FEBD69] px-4 py-2 text-gray-900 hover:bg-[#F3A847] transition">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </form>
+
+      <!-- Account, Orders & Cart Counter -->
+      <div class="order-2 flex items-center gap-2 sm:gap-4 md:order-3">
+        <a href="#reviews" class="hidden sm:block rounded px-2 py-1 text-left leading-tight hover:outline hover:outline-1 hover:outline-white">
+          <span class="block text-[11px] text-gray-300">Hello, Student</span>
+          <span class="text-xs font-bold">Account & Lists</span>
+        </a>
+        <a href="#deals" class="hidden md:block rounded px-2 py-1 text-left leading-tight hover:outline hover:outline-1 hover:outline-white">
+          <span class="block text-[11px] text-gray-300">Returns</span>
+          <span class="text-xs font-bold">& Orders</span>
+        </a>
+        <button onclick="showToast('Viewing your shopping cart (' + cartCount + ' items)')" class="relative flex items-center gap-1.5 rounded px-2.5 py-1.5 hover:outline hover:outline-1 hover:outline-white">
+          <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6h13M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
+          </svg>
+          <span id="cart-count" class="absolute -top-0.5 left-5 rounded-full bg-[#FF9900] px-1.5 text-xs font-extrabold text-[#131921]">0</span>
+          <span class="text-xs font-bold mt-2">Cart</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. SECONDARY SUB-NAVIGATION BAR -->
+    <nav class="bg-[#232F3E] px-4 py-1.5 text-xs sm:text-sm">
+      <div class="mx-auto flex max-w-7xl items-center gap-4 overflow-x-auto whitespace-nowrap">
+        <a href="#categories" class="flex items-center gap-1 rounded px-2 py-1 font-bold hover:outline hover:outline-1 hover:outline-white">
+          <span>☰</span> All
+        </a>
+        <a href="#deals" class="rounded px-2 py-1 hover:outline hover:outline-1 hover:outline-white">Today's Deals</a>
+        <a href="#featured" class="rounded px-2 py-1 hover:outline hover:outline-1 hover:outline-white">Electronics</a>
+        <a href="#featured" class="rounded px-2 py-1 hover:outline hover:outline-1 hover:outline-white">Fashion</a>
+        <a href="#categories" class="rounded px-2 py-1 hover:outline hover:outline-1 hover:outline-white">Home & Kitchen</a>
+        <a href="#categories" class="rounded px-2 py-1 hover:outline hover:outline-1 hover:outline-white">Books</a>
+        <a href="#reviews" class="rounded px-2 py-1 hover:outline hover:outline-1 hover:outline-white">Customer Reviews</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <main class="mx-auto max-w-7xl pb-12">
+
+    <!-- 3. PROMOTIONAL HERO BANNER WITH GRADIENT FADE -->
+    <section class="relative overflow-hidden">
+      <div class="relative h-[340px] sm:h-[400px] w-full bg-gradient-to-r from-[#1a2639] via-[#283c5a] to-[#0f172a]">
+        <!-- Subtle Decorative Background Image -->
+        <img 
+          src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1400&q=80" 
+          alt="Mega Shopping Sale Banner" 
+          onerror="this.style.display='none'"
+          class="h-full w-full object-cover opacity-35 mix-blend-luminosity"
+        />
+        <!-- Bottom Gradient Fade into Page Background (#EAEDED) -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#EAEDED]"></div>
+
+        <!-- Hero Text & CTA -->
+        <div class="absolute inset-0 flex flex-col justify-start px-6 pt-8 sm:px-12 sm:pt-12 max-w-2xl text-white">
+          <span class="mb-2 inline-block w-fit rounded-full bg-[#FF9900] px-3 py-0.5 text-xs font-extrabold uppercase tracking-wider text-[#131921]">
+            Great Indian Tech & Lifestyle Fest
+          </span>
+          <h1 class="text-2xl sm:text-4xl font-extrabold leading-tight drop-shadow">
+            Upgrade Your Everyday Essentials at Unbeatable Prices
+          </h1>
+          <p class="mt-2 text-sm sm:text-base text-gray-100 drop-shadow">
+            Save up to 50% on top-rated electronics, study gear, fashion, and home decor with fast student delivery.
+          </p>
+          <a href="#deals" class="mt-4 inline-block w-fit rounded-md bg-[#FFD814] px-5 py-2.5 text-sm font-bold text-[#0F1111] shadow hover:bg-[#F7CA00] transition">
+            Shop Today's Deals →
+          </a>
+        </div>
+      </div>
+
+      <!-- MULTI-CARD CATEGORY GRID OVERLAPPING BOTTOM OF HERO BANNER -->
+      <div id="categories" class="relative z-10 -mt-24 sm:-mt-32 px-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        
+        <!-- Category Card 1: Electronics -->
+        <div class="flex flex-col justify-between rounded-lg bg-white p-5 shadow-sm">
+          <h2 class="mb-3 text-lg font-bold text-[#0F1111]">Electronics & Audio</h2>
+          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80" alt="Headphones" onerror="this.src='https://placehold.co/400x300/e2e8f0/1e293b?text=Electronics'" class="h-44 w-full rounded object-cover" />
+          <a href="#featured" class="mt-3 text-xs font-semibold text-[#007185] hover:text-[#C7511F] hover:underline">Explore gadgets →</a>
+        </div>
+
+        <!-- Category Card 2: Fashion -->
+        <div class="flex flex-col justify-between rounded-lg bg-white p-5 shadow-sm">
+          <h2 class="mb-3 text-lg font-bold text-[#0F1111]">Trending Fashion</h2>
+          <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80" alt="Smart Watch & Style" onerror="this.src='https://placehold.co/400x300/e2e8f0/1e293b?text=Fashion'" class="h-44 w-full rounded object-cover" />
+          <a href="#featured" class="mt-3 text-xs font-semibold text-[#007185] hover:text-[#C7511F] hover:underline">See latest styles →</a>
+        </div>
+
+        <!-- Category Card 3: Home & Kitchen -->
+        <div class="flex flex-col justify-between rounded-lg bg-white p-5 shadow-sm">
+          <h2 class="mb-3 text-lg font-bold text-[#0F1111]">Home & Study Setup</h2>
+          <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=500&q=80" alt="Cozy Room Decor" onerror="this.src='https://placehold.co/400x300/e2e8f0/1e293b?text=Home+%26+Kitchen'" class="h-44 w-full rounded object-cover" />
+          <a href="#featured" class="mt-3 text-xs font-semibold text-[#007185] hover:text-[#C7511F] hover:underline">Refresh your room →</a>
+        </div>
+
+        <!-- Category Card 4: Books & Stationery -->
+        <div class="flex flex-col justify-between rounded-lg bg-white p-5 shadow-sm">
+          <h2 class="mb-3 text-lg font-bold text-[#0F1111]">Bestselling Books</h2>
+          <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80" alt="Books Collection" onerror="this.src='https://placehold.co/400x300/e2e8f0/1e293b?text=Books'" class="h-44 w-full rounded object-cover" />
+          <a href="#featured" class="mt-3 text-xs font-semibold text-[#007185] hover:text-[#C7511F] hover:underline">Browse library →</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 4. TODAY'S OFFERS / LIGHTNING DEALS SECTION -->
+    <section id="deals" class="mx-4 mt-8 rounded-lg bg-white p-5 shadow-sm">
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-3">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-bold">Today's Blockbuster Deals</h2>
+          <span class="rounded bg-[#CC0C39] px-2.5 py-0.5 text-xs font-bold text-white">Ends in 04:28:15</span>
+        </div>
+        <a href="#featured" class="text-sm font-semibold text-[#007185] hover:underline">See all deals</a>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Deal Item 1 -->
+        <div class="rounded-md border border-gray-100 bg-gray-50 p-3 hover:shadow-md transition">
+          <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=400&q=80" alt="Smartwatch Pro" onerror="this.src='https://placehold.co/300x200?text=Smartwatch'" class="h-36 w-full rounded object-cover mb-2.5" />
+          <div class="flex items-center gap-2">
+            <span class="rounded bg-[#CC0C39] px-2 py-0.5 text-xs font-bold text-white">Up to 45% Off</span>
+            <span class="text-xs font-bold text-[#CC0C39]">Limited time deal</span>
+          </div>
+          <p class="mt-1.5 text-sm font-medium text-gray-800 truncate">PulseFit AMOLED Smartwatch</p>
+        </div>
+
+        <!-- Deal Item 2 -->
+        <div class="rounded-md border border-gray-100 bg-gray-50 p-3 hover:shadow-md transition">
+          <img src="https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=400&q=80" alt="Wireless Mouse" onerror="this.src='https://placehold.co/300x200?text=Mouse'" class="h-36 w-full rounded object-cover mb-2.5" />
+          <div class="flex items-center gap-2">
+            <span class="rounded bg-[#CC0C39] px-2 py-0.5 text-xs font-bold text-white">Up to 40% Off</span>
+            <span class="text-xs font-bold text-[#CC0C39]">Deal of the Day</span>
+          </div>
+          <p class="mt-1.5 text-sm font-medium text-gray-800 truncate">ErgoGlide Silent Wireless Mouse</p>
+        </div>
+
+        <!-- Deal Item 3 -->
+        <div class="rounded-md border border-gray-100 bg-gray-50 p-3 hover:shadow-md transition">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80" alt="Running Shoes" onerror="this.src='https://placehold.co/300x200?text=Sneakers'" class="h-36 w-full rounded object-cover mb-2.5" />
+          <div class="flex items-center gap-2">
+            <span class="rounded bg-[#CC0C39] px-2 py-0.5 text-xs font-bold text-white">35% Off</span>
+            <span class="text-xs font-bold text-[#CC0C39]">Top Rated</span>
+          </div>
+          <p class="mt-1.5 text-sm font-medium text-gray-800 truncate">AeroStride Lightweight Sneakers</p>
+        </div>
+
+        <!-- Deal Item 4 -->
+        <div class="rounded-md border border-gray-100 bg-gray-50 p-3 hover:shadow-md transition">
+          <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=400&q=80" alt="Desk Lamp" onerror="this.src='https://placehold.co/300x200?text=Lamp'" class="h-36 w-full rounded object-cover mb-2.5" />
+          <div class="flex items-center gap-2">
+            <span class="rounded bg-[#CC0C39] px-2 py-0.5 text-xs font-bold text-white">50% Off</span>
+            <span class="text-xs font-bold text-[#CC0C39]">Student Pick</span>
+          </div>
+          <p class="mt-1.5 text-sm font-medium text-gray-800 truncate">Lumina Minimalist Study Lamp</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FEATURED PRODUCTS & SHOPPING SECTION -->
+    <section id="featured" class="mx-4 mt-8">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-[#0F1111]">Featured Products for You</h2>
+        <span class="text-xs text-gray-600">Free delivery on eligible orders</span>
+      </div>
+
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        
+        <!-- Product Card 1 -->
+        <article class="flex flex-col justify-between rounded-lg bg-white p-4 shadow-sm hover:shadow-md transition">
+          <div>
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80" alt="Studio Wireless Headphones" onerror="this.src='https://placehold.co/400x300?text=Headphones'" class="h-44 w-full rounded-md object-cover mb-3" />
+            <h3 class="text-sm font-semibold text-[#0F1111] line-clamp-2">SoundCore Pro Active Noise Cancelling Wireless Headphones</h3>
+            <div class="mt-1 flex items-center gap-1 text-xs text-amber-500">
+              <span>★★★★☆</span>
+              <span class="text-[#007185]">(2,418)</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl font-bold">₹2,499</span>
+              <span class="text-xs text-gray-500 line-through">M.R.P: ₹4,999</span>
+            </div>
+            <p class="mt-1 text-xs font-semibold text-[#007185]">✓ Prime <span class="font-normal text-gray-600">FREE Delivery Tomorrow</span></p>
+          </div>
+          <button onclick="addToCart('SoundCore Pro Headphones')" class="mt-4 w-full rounded-full bg-[#FFD814] py-2 text-xs font-bold text-[#0F1111] hover:bg-[#F7CA00] active:scale-[0.99] transition">
+            Add to Cart
+          </button>
+        </article>
+
+        <!-- Product Card 2 -->
+        <article class="flex flex-col justify-between rounded-lg bg-white p-4 shadow-sm hover:shadow-md transition">
+          <div>
+            <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=500&q=80" alt="Laptop Backpack" onerror="this.src='https://placehold.co/400x300?text=Backpack'" class="h-44 w-full rounded-md object-cover mb-3" />
+            <h3 class="text-sm font-semibold text-[#0F1111] line-clamp-2">UrbanPack Water-Resistant 15.6" College Laptop Backpack</h3>
+            <div class="mt-1 flex items-center gap-1 text-xs text-amber-500">
+              <span>★★★★★</span>
+              <span class="text-[#007185]">(1,892)</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl font-bold">₹1,199</span>
+              <span class="text-xs text-gray-500 line-through">M.R.P: ₹2,299</span>
+            </div>
+            <p class="mt-1 text-xs font-semibold text-[#007185]">✓ Prime <span class="font-normal text-gray-600">FREE Delivery</span></p>
+          </div>
+          <button onclick="addToCart('UrbanPack Laptop Backpack')" class="mt-4 w-full rounded-full bg-[#FFD814] py-2 text-xs font-bold text-[#0F1111] hover:bg-[#F7CA00] active:scale-[0.99] transition">
+            Add to Cart
+          </button>
+        </article>
+
+        <!-- Product Card 3 -->
+        <article class="flex flex-col justify-between rounded-lg bg-white p-4 shadow-sm hover:shadow-md transition">
+          <div>
+            <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=500&q=80" alt="Mechanical Keyboard" onerror="this.src='https://placehold.co/400x300?text=Keyboard'" class="h-44 w-full rounded-md object-cover mb-3" />
+            <h3 class="text-sm font-semibold text-[#0F1111] line-clamp-2">KeyMaster RGB Compact Mechanical Coding Keyboard</h3>
+            <div class="mt-1 flex items-center gap-1 text-xs text-amber-500">
+              <span>★★★★☆</span>
+              <span class="text-[#007185]">(945)</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl font-bold">₹3,299</span>
+              <span class="text-xs text-gray-500 line-through">M.R.P: ₹5,499</span>
+            </div>
+            <p class="mt-1 text-xs font-semibold text-[#007185]">✓ Prime <span class="font-normal text-gray-600">FREE Delivery Tomorrow</span></p>
+          </div>
+          <button onclick="addToCart('KeyMaster Mechanical Keyboard')" class="mt-4 w-full rounded-full bg-[#FFD814] py-2 text-xs font-bold text-[#0F1111] hover:bg-[#F7CA00] active:scale-[0.99] transition">
+            Add to Cart
+          </button>
+        </article>
+
+        <!-- Product Card 4 -->
+        <article class="flex flex-col justify-between rounded-lg bg-white p-4 shadow-sm hover:shadow-md transition">
+          <div>
+            <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=500&q=80" alt="Clean Code Book" onerror="this.src='https://placehold.co/400x300?text=Book'" class="h-44 w-full rounded-md object-cover mb-3" />
+            <h3 class="text-sm font-semibold text-[#0F1111] line-clamp-2">Modern Web Design & Architecture Handbook (Paperback)</h3>
+            <div class="mt-1 flex items-center gap-1 text-xs text-amber-500">
+              <span>★★★★★</span>
+              <span class="text-[#007185]">(3,120)</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl font-bold">₹549</span>
+              <span class="text-xs text-gray-500 line-through">M.R.P: ₹899</span>
+            </div>
+            <p class="mt-1 text-xs font-semibold text-[#007185]">✓ Prime <span class="font-normal text-gray-600">FREE Delivery</span></p>
+          </div>
+          <button onclick="addToCart('Modern Web Design Handbook')" class="mt-4 w-full rounded-full bg-[#FFD814] py-2 text-xs font-bold text-[#0F1111] hover:bg-[#F7CA00] active:scale-[0.99] transition">
+            Add to Cart
+          </button>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- 6. CUSTOMER REVIEWS SECTION -->
+    <section id="reviews" class="mx-4 mt-8 rounded-lg bg-white p-6 shadow-sm">
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-3">
+        <div>
+          <h2 class="text-xl font-bold text-[#0F1111]">Top Customer Reviews</h2>
+          <p class="text-xs text-gray-600">Rated 4.7 out of 5 stars based on 12,500+ verified student & home orders</p>
+        </div>
+        <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+          ✓ 100% Verified Purchases
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <!-- Review 1 -->
+        <div class="rounded-md border border-gray-200 p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-gray-900">Aarav Sharma</span>
+            <span class="text-xs text-amber-500">★★★★★</span>
+          </div>
+          <p class="mt-0.5 text-[11px] font-semibold text-[#C7511F]">Verified Purchase • SoundCore Headphones</p>
+          <p class="mt-2 text-xs leading-relaxed text-gray-700">
+            "Super comfortable for long study sessions and online lectures. Battery lasts almost a whole week on a single charge!"
+          </p>
+        </div>
+
+        <!-- Review 2 -->
+        <div class="rounded-md border border-gray-200 p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-gray-900">Priya Nair</span>
+            <span class="text-xs text-amber-500">★★★★★</span>
+          </div>
+          <p class="mt-0.5 text-[11px] font-semibold text-[#C7511F]">Verified Purchase • UrbanPack Backpack</p>
+          <p class="mt-2 text-xs leading-relaxed text-gray-700">
+            "Fits my 15-inch laptop, charger, and notebooks effortlessly. Delivered the very next morning with Prime!"
+          </p>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="rounded-md border border-gray-200 p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-gray-900">Rohan Verma</span>
+            <span class="text-xs text-amber-500">★★★★☆</span>
+          </div>
+          <p class="mt-0.5 text-[11px] font-semibold text-[#C7511F]">Verified Purchase • KeyMaster Keyboard</p>
+          <p class="mt-2 text-xs leading-relaxed text-gray-700">
+            "Tactile keys feel great for coding assignments, and the compact size leaves plenty of desk space for my mouse."
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 7. BACK-TO-TOP BAR & MULTI-COLUMN AMAZON-STYLE FOOTER -->
+  <footer>
+    <!-- Back to top button -->
+    <a href="#top" class="block bg-[#37475A] py-3 text-center text-xs font-semibold text-white hover:bg-[#485769] transition">
+      Back to top ↑
+    </a>
+
+    <!-- Main Footer Columns -->
+    <div class="bg-[#232F3E] px-6 py-10 text-gray-300">
+      <div class="mx-auto grid max-w-6xl grid-cols-2 gap-8 sm:grid-cols-4 text-xs">
+        <div>
+          <h3 class="mb-3 text-sm font-bold text-white">Get to Know Us</h3>
+          <ul class="space-y-2">
+            <li><a href="#top" class="hover:underline">About ShopZone</a></li>
+            <li><a href="#top" class="hover:underline">Careers</a></li>
+            <li><a href="#top" class="hover:underline">Press Releases</a></li>
+            <li><a href="#top" class="hover:underline">ShopZone Science</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="mb-3 text-sm font-bold text-white">Connect with Us</h3>
+          <ul class="space-y-2">
+            <li><a href="#top" class="hover:underline">Instagram</a></li>
+            <li><a href="#top" class="hover:underline">Twitter / X</a></li>
+            <li><a href="#top" class="hover:underline">YouTube</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="mb-3 text-sm font-bold text-white">Make Money with Us</h3>
+          <ul class="space-y-2">
+            <li><a href="#top" class="hover:underline">Sell on ShopZone</a></li>
+            <li><a href="#top" class="hover:underline">Affiliate Program</a></li>
+            <li><a href="#top" class="hover:underline">Advertise Your Products</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="mb-3 text-sm font-bold text-white">Let Us Help You</h3>
+          <ul class="space-y-2">
+            <li><a href="#top" class="hover:underline">Your Account</a></li>
+            <li><a href="#top" class="hover:underline">Returns Centre</a></li>
+            <li><a href="#top" class="hover:underline">100% Purchase Protection</a></li>
+            <li><a href="#top" class="hover:underline">Help & Support</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright Bar -->
+    <div class="border-t border-gray-700 bg-[#131921] px-4 py-6 text-center text-xs text-gray-400">
+      <span class="text-lg font-extrabold text-white">Shop<span class="text-[#FF9900]">Zone</span></span>
+      <p class="mt-2">© 2026 ShopZone.in — Created as a Student Web Development Project.</p>
+    </div>
+  </footer>
+
+  <!-- Minimal Vanilla JS for Interactive Cart Counter & Search Feedback -->
+  <script>
+    let cartCount = 0;
+    let toastTimer;
+
+    function addToCart(productName) {
+      cartCount++;
+      document.getElementById('cart-count').textContent = cartCount;
+      showToast(`Added "${productName}" to your cart!`);
+    }
+
+    function handleSearch(event) {
+      event.preventDefault();
+      const query = document.getElementById('search-input').value.trim();
+      showToast(query ? `Searching for "${query}"...` : 'Showing all featured products');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 2800);
+    }
+  </script>
+</body>
+</html>
